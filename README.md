@@ -30,4 +30,4 @@ MV810Asm redalarm-save.asm redalarm-save.vb /V /H "Red Alarm (USA).vb"
 ```
 You will need to supply clean original ROMs. Filenames are examples only.
 
-If you don't need to modify these hacks, you can also just download pre-built IPS patches from the [Releases tab](/releases).
+If you don't need to modify these hacks, you can also just download pre-built IPS patches from the [Releases tab](https://github.com/vaguerant/vb-patches/releases).
