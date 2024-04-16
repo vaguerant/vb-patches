@@ -5,7 +5,7 @@ Here's a few assembly patches for Virtual Boy games.
   * compatible with `Golf (USA).vb`
   * restores full save support from the Japanese game, replacing password system
   * erase saves with the normal in-game menu under Individual Records
-* `jack-bros.asm`
+* `jackbros-save.asm`
   * compatible with `Jack Bros. (USA).vb` **only**
   * does not apply to the Japan ROM but adds the option to switch language (English/Japanese) by holding the **Start** button while booting the game. Defaults to English, but the language setting *is* saved
   * saves the most recent password entered *or* received via gameplay. In line with this, the `PASSWORD` option on the title screen is now the `CONTINUE` option
