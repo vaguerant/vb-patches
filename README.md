@@ -5,6 +5,13 @@ Here's a few assembly patches for Virtual Boy games.
   * compatible with `Golf (USA).vb`
   * restores full save support from the Japanese game, replacing password system
   * erase saves with the normal in-game menu under Individual Records
+* `jack-bros.asm`
+  * compatible with `Jack Bros. (USA).vb` **only**
+  * does not apply to the Japan ROM but adds the option to switch language (English/Japanese) by holding the **Start** button while booting the game. Defaults to English, but the language setting *is* saved
+  * saves the most recent password entered *or* received via gameplay. In line with this, the `PASSWORD` option on the title screen is now the `CONTINUE` option
+  * latest saved password can be loaded by pressing **Start** on the Continue screen. If a password is available, a prompt is added to the password entry screen
+  * enables the [debug mode and Japan-only sound test feature](https://www.virtual-boy.com/games/jack-bros/guides/)
+  * fixes the sound test to display Japanese characters correctly in English mode
 * `marioclash-save.asm`
   * compatible with `Mario Clash (Japan, USA).vb`
   * adds support for saving your level progress, high scores and brightness
@@ -21,6 +28,9 @@ These patches are written for [Matej's V810 assembler](http://matejhorvat.si/en/
 You can build your patched ROMs like so:
 ```
 MV810Asm golf-save.asm golf-save.vb /V /H "Golf (USA).vb"
+```
+```
+MV810Asm jackbros-save.asm jackbros-save.vb /V /H "Jack Bros. (USA).vb"
 ```
 ```
 MV810Asm marioclash-save.asm marioclash-save.vb /V /H "Mario Clash (Japan, USA).vb"
