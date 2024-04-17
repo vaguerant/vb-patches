@@ -64,6 +64,12 @@ FONT_CHECK:
     ld.h 0x00f2[r25], r11
     cmp r0, r11
 
+; Secret language switch built into the game?! Hijack this to switch in SRAM
+!ORG 0x0700461E
+!SEEK 0x0461E
+    jr LANGUAGE_SWAP        ; st.h r6, 0x00F2[r25]
+LANGUAGE_SWAP_RETURN:
+
 ; Read language byte from save (0x600) instead of ROM (0x700) everywhere
 !SEEK 0x0481A
     movhi 0x600, r0, r1
@@ -153,16 +159,8 @@ CHECK_SRAM:
     movhi 0x600, r0, r6
     ld.w 0x0000[r6], r7
     cmp r1, r7
-    be LANGUAGE_CHECK
-    jal CLEAR_SRAM
-LANGUAGE_CHECK:
-    movhi 0x200, r0, r7
-    ld.b 0x0014[r7], r7
-    andi 0x10, r7, r0
     be CLEAR_MEM
-    ld.b 0x0004[r6], r7
-    xori 0xFF, r7, r7
-    st.b r7, 0x0004[r6]
+    jal CLEAR_SRAM
 CLEAR_MEM:
     mov r25, r6
     movea 0x4000, r0, r7
@@ -186,6 +184,15 @@ CLEAR_SRAM:
     st.w r7, 0x0030[r6]     ; password
     ?pop r1, r6, r7
     jmp [lp]
+
+LANGUAGE_SWAP:
+    ?push r7
+    movhi 0x600, r0, r1
+    ld.b 0x0004[r1], r7
+    xor r7, r6
+    st.h r6, 0x0004[r1]
+    ?pop r7
+    jr LANGUAGE_SWAP_RETURN
 
 CONTINUE:
     ?push r6

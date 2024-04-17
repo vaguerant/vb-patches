@@ -7,7 +7,7 @@ Here's a few assembly patches for Virtual Boy games.
   * erase saves with the normal in-game menu under Individual Records
 * `jackbros-save.asm`
   * compatible with `Jack Bros. (USA).vb` **only**
-  * does not apply to the Japan ROM but adds the option to switch language (English/Japanese) by holding the **Start** button while booting the game. Defaults to English, but the language setting *is* saved
+  * does not apply to the Japan ROM but you can use the secret language-swap button code built into the original game (!). Hold **L**, **R** and **Left D-Pad Left** then press **Start** on the title screen; this will switch languages and save the new setting to SRAM
   * saves the most recent password entered *or* received via gameplay. In line with this, the `PASSWORD` option on the title screen is now the `CONTINUE` option
   * latest saved password can be loaded by pressing **Start** on the Continue screen. If a password is available, a prompt is added to the password entry screen
   * enables the [debug mode and Japan-only sound test feature](https://www.virtual-boy.com/games/jack-bros/guides/)
