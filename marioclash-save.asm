@@ -83,7 +83,7 @@ SAVE_SCORES_A_RETURN:
 !ORG 0xFFFFC782
 !SEEK 0xFC782
     jr SAVE_SCORES_B            ; st.w r12, -0x6564[r1]
-    ?db 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    ?db 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 SAVE_SCORES_B_RETURN:
 
 !ORG 0xFFFFD7AA
@@ -246,26 +246,26 @@ SAVE_SCORES_A:
     ld.b -0x658C[r1], r11
     shl 1, r24
     movhi 0x601, r24, r1
-    st.b r11, -0x6540[r1]       ; level
     shr 1, r24
+    st.b r11, -0x6540[r1]       ; level
     ?br SAVE_SCORES_A_RETURN
 
 SAVE_SCORES_B:              ; lol scoresby
     st.w r12, -0x6564[r1]       ; write to ram
     shl 1, r11
     movhi 0x601, r11, r1
-    st.b r12, -0x6564[r1]       ; here we go again
-    shr 8, r12
-    st.b r12, -0x6562[r1]
-    shr 8, r12
-    st.b r12, -0x6560[r1]
+    st.b r12, -0x6560[r1]       ; here we go again
     shr 8, r12
     st.b r12, -0x655E[r1]
-    movea 0x28, sp, r11
+    shr 8, r12
+    st.b r12, -0x655C[r1]
+    shr 8, r12
+    st.b r12, -0x655A[r1]
+    movea 0x28, r3, r11
     add r25, r11
     ld.b 0x0000[r11], r11
     shl 1, r25
     movhi 0x601, r25, r1
-    st.b r11, -0x653E[r1]
     shr 1, r25
+    st.b r11, -0x653E[r1]
     ?br SAVE_SCORES_B_RETURN
