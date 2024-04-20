@@ -1,4 +1,6 @@
-!IF 0
+!CONST SKIP_INTRO, 0
+
+!IF SKIP_INTRO
 ; Disable Splash Screens
 !SEEK 0x04328
     mov r0, r0
@@ -21,7 +23,7 @@ FFE1315C:
 FFE131A0:
 
 !ORG 0xFFE131E8
-FFE131E8:
+VALIDATE_CHECKSUM:
 
 ; Save check ported from Japanese version
 !ORG 0xFFE2A800
@@ -32,45 +34,45 @@ SAVE_CHECK:
     movhi 0x600, r0, r1
     movea 0x0000, r1, r6
     movhi 0xFFF4, r0, r1
-    movea 0xB3DC, r1, r7
-    jr FFE2A840
-FFE2A81C:
+    movea 0xB3DC, r1, r7    ; "T&E VR Golf p12" checkword in ROM
+        jr READ_CHECKWORD_ROM
+COMPARE_CHECKWORD_BYTE:
     mov r10, r9
     andi 0xFF, r9, r9
     ld.b 0x0000[r6], r8
     andi 0xFF, r8, r8
-    cmp r9, r8
-    bne FFE2A832
-    jr FFE2A83C
-FFE2A832:
-    jal FFE1315C
+    cmp r9, r8              ; does save have the correct byte?
+        bne CHECKWORD_FAILED
+        jr CHECKWORD_PASSED
+CHECKWORD_FAILED:
+        jal FFE1315C
     mov 1, r10
-    jr FFE2A87A
-FFE2A83C:
+        jr RETURN_SAVE_CHECK
+CHECKWORD_PASSED:
     add 2, r6
     add 1, r7
-FFE2A840:
+READ_CHECKWORD_ROM:
     ld.b 0x0000[r7], r10
     cmp 0, r10
-    bne FFE2A81C
+        bne COMPARE_CHECKWORD_BYTE
     movea 0x1FEC, r0, r7
     movhi 0x600, r0, r1
     movea 0x28, r1, r6
-    jal FFE131E8
+        jal VALIDATE_CHECKSUM
     mov r10, r7
-    st.w r7, 0x10[sp]
-    jal FFE131A0
+    st.w r7, 0x10[sp]       ; store calculated checksum
+        jal FFE131A0
     ld.w 0x10[sp], r7
-    cmp r10, r7
-    bne FFE2A86E
-    jr FFE2A878
-FFE2A86E:
-    jal FFE1315C
+    cmp r10, r7             ; does checksum in save match?
+        bne BAD_CHECKSUM
+        jr CHECKSUM_OK
+BAD_CHECKSUM:
+        jal FFE1315C
     mov 1, r10
-    jr FFE2A87A
-FFE2A878:
+        jr RETURN_SAVE_CHECK
+CHECKSUM_OK:
     mov r0, r10
-FFE2A87A:
+RETURN_SAVE_CHECK:
     ld.w 0x14[sp], lp
     addi 0x18, sp, sp
-    jmp [lp]
+        jmp [lp]

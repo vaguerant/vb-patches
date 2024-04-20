@@ -8,10 +8,11 @@ Here's a few assembly patches for Virtual Boy games.
 * `jackbros-save.asm`
   * compatible with `Jack Bros. (USA).vb` **only**
   * does not apply to the Japan ROM but you can use the secret language-swap button code built into the original game (!). Hold **L**, **R** and **Left D-Pad Left** then press **Start** on the title screen; this will switch languages and save the new setting to SRAM
-  * saves the most recent password entered *or* received via gameplay. In line with this, the `PASSWORD` option on the title screen is now the `CONTINUE` option
-  * latest saved password can be loaded by pressing **Start** on the Continue screen. If a password is available, a prompt is added to the password entry screen
-  * enables the [debug mode and Japan-only sound test feature](https://www.virtual-boy.com/games/jack-bros/guides/)
-  * fixes the sound test to display Japanese characters correctly in English mode
+  * adds ability to enable/disable the [debug mode](https://www.virtual-boy.com/games/jack-bros/guides/). Hold **Select** while booting the game; this setting is also saved to SRAM. The title screen shows "DEBUG" in the bottom right when enabled
+  * enables the [Japan-only sound test](https://www.virtual-boy.com/games/jack-bros/guides/) and fixes the Japanese text to display correctly
+  * separately saves progress for all "three" characters from the Select Player screen **and/or** by entering passwords, i.e. passwords *will* replace your save games
+  * adds ~~secret character~~ to the Select Player screen. Hold **L** + **R** while cycling through characters
+  * erase individual character saves by pressing **Left D-Pad Down** four times in a row while they are highlighted on the Select Player screen. There are warning sounds
 * `marioclash-save.asm`
   * compatible with `Mario Clash (Japan, USA).vb`
   * adds support for saving your level progress, high scores and brightness
