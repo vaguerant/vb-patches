@@ -20,7 +20,23 @@ Here's a few assembly patches for Virtual Boy games.
   * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
 * `redalarm-save.asm`
   * compatible with either `Red Alarm (USA).vb` or `Red Alarm (Japan).vb`
-  * adds support for saving your high score and all options screen settings: brightness, depth, button control scheme and difficulty
+  * adds support for saving your high score 
+  * prevents high score from being written while running in debug mode
+  * saves all options screen settings: brightness, depth, button control scheme and difficulty
+  * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
+* `vert-u-save.asm` and `vert-j-save.asm`
+  * compatible with `Vertical Force (USA).vb` and `Vertical Force (Japan).vb`, respectively
+  * adds support for saving high scores and completion times in all three difficulties
+  * prevents high scores/best times from being written if you came via level select
+  * saves the brightness, difficulty and control settings
+  * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
+* `water-save.asm`
+  * compatible with `Waterworld (USA).vb`
+  * adds a high score display in the top left of the HUD
+  * minor HUD rearrangements to make the high score fit in the limited space, e.g. `PLAYER` (or `LEADER`/`WINNER` in multiplayer) reduced to `P` (`L`/`W`)
+  * adds saving for the new high score feature
+  * only shows the auto-pause selection on boot, instead of every time you game over
+  * disables the annoying reminder noise if you don't press any buttons for a while
   * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
 
 # How to build
@@ -29,15 +45,12 @@ These patches are written for [Matej's V810 assembler](http://matejhorvat.si/en/
 You can build your patched ROMs like so:
 ```
 MV810Asm golf-save.asm golf-save.vb /V /H "Golf (USA).vb"
-```
-```
 MV810Asm jackbros-save.asm jackbros-save.vb /V /H "Jack Bros. (USA).vb"
-```
-```
 MV810Asm marioclash-save.asm marioclash-save.vb /V /H "Mario Clash (Japan, USA).vb"
-```
-```
 MV810Asm redalarm-save.asm redalarm-save.vb /V /H "Red Alarm (USA).vb"
+MV810Asm vert-u-save.asm vert-u-save.vb /V /H "Vertical Force (USA).vb"
+MV810Asm vert-j-save.asm vert-j-save.vb /V /H "Vertical Force (Japan).vb"
+MV810Asm water-save.asm water-save.vb /V /H "Waterworld (USA).vb"
 ```
 You will need to supply clean original ROMs. Filenames are examples only.
 

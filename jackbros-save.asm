@@ -26,6 +26,13 @@
     mov r0, r0              ; movea 0x4000, r0, r7
 CHECK_SRAM_RETURN:
 
+; Write debug byte to save if booted while holding Select
+!ORG 0x07000CF2
+!SEEK 0x00CF2
+    jal DEBUG_CHECK         ; jal STARTUP
+!ORG 0x0701AD30
+STARTUP:                    ; populates r1, r6, r7
+
 ; The sound test needs the text routine to use the Japanese font,
 ; so the US game disables it entirely. Instead, we're going to
 ; check if we're in the sound test currently and switch language.
@@ -54,7 +61,7 @@ SOUND_CHECK_FAILED:
 !ORG 0x07003474
 MENU_PRINT:
 
-; Dialogue text printing, needs a fix to handle sound test switch.
+; Dialogue text printing, needed a fix to handle sound test switch
 !ORG 0x070036D0
 !SEEK 0x036D0
     br FONT_CHECK
@@ -191,8 +198,8 @@ CHECK_SRAM:
     ?mov CHECKWORD, r1
     movhi 0x600, r0, r6
         NEXT_CHECKBYTE:
-            andi 4, r6, r0  ; if CHECKWORD is valid, skip SRAM init
-                bne DEBUG_CHECK
+            andi 8, r6, r0  ; if CHECKWORD is valid, skip SRAM init
+                bne CLEAR_MEM
             ld.b 0x0000[r1], r7
             ld.b 0x0008[r6], r8
             add 1, r1
@@ -200,22 +207,15 @@ CHECK_SRAM:
             cmp r7, r8
                 be NEXT_CHECKBYTE
     jal CLEAR_SRAM
-DEBUG_CHECK:
-    movhi 0x600, r0, r6
-    movhi 0x200, r0, r7
-    ld.b 0x0014[r7], r7
-    andi 0x20, r7, r0
-    be CLEAR_MEM
-    ld.b 0x0000[r6], r7
-    xori 0xFF, r7, r7
-    st.b r7, 0x0000[r6]
 CLEAR_MEM:
     mov r25, r6
     movea 0x4000, r0, r7
-    ?br CHECK_SRAM_RETURN
+    ?pop r1, r8
+        ?br CHECK_SRAM_RETURN
 
 CLEAR_SRAM:
     ?push r1, r7
+    ?mov CHECKWORD, r1
     ld.w 0x0000[r1], r1
     movhi 0x600, r0, r6
     movea 0x4000, r0, r7
@@ -223,7 +223,7 @@ CLEAR_SRAM:
             st.w r0, 0x0000[r6]
             add 4, r6
             add -1, r7
-            bne NEXT_SRAM
+                bne NEXT_SRAM
     ?mov CHECKWORD, r6
     ld.w 0x0000[r6], r6
     movhi 0x600, r0, r7
@@ -237,7 +237,19 @@ CLEAR_SRAM:
     mov -1, r6
     st.b r6, 0x0004[r7]      ; language
     ?pop r1, r7
-    jmp [lp]
+        jmp [lp]
+
+DEBUG_CHECK:
+    movhi 0x600, r0, r6
+    movhi 0x500, r0, r7
+    ld.b 0x0010[r7], r7
+    andi 0x80, r7, r0
+        be NO_DEBUG_SWITCH
+    ld.b 0x0000[r6], r7
+    xori 0xFF, r7, r7
+    st.b r7, 0x0000[r6]
+        NO_DEBUG_SWITCH:
+            jr STARTUP
 
 LANGUAGE_SWAP:
     ?push r7

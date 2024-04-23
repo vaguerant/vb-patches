@@ -92,7 +92,7 @@ CHECK_SRAM:
     movea 0x1610, r6, r6    ; address of RASV in ROM
     movhi 0x600, r0, r30
 NEXT_CHECKBYTE:
-    andi 4, r6, r0
+    andi 8, r6, r0
     bne CLEAR_MEM
     ld.b 0x0000[r30], r1    ; address of RASV in SRAM
     ld.b 0x0000[r6], r7
