@@ -11,6 +11,7 @@ Here's a few assembly patches for Virtual Boy games.
   * adds ability to enable/disable the [debug mode](https://www.virtual-boy.com/games/jack-bros/guides/). Hold **Select** while booting the game; this setting is also saved to SRAM. The title screen shows "DEBUG" in the bottom right when enabled
   * enables the [Japan-only sound test](https://www.virtual-boy.com/games/jack-bros/guides/) and fixes the Japanese text to display correctly
   * separately saves progress for all "three" characters from the Select Player screen **and/or** by entering passwords, i.e. passwords *will* replace your save games
+  * saves the difficulty setting (normal/"for super players"), with separate save slots for normal and super difficulties
   * adds ~~secret character~~ to the Select Player screen. Hold **L** + **R** while cycling through characters
   * erase individual character saves by pressing **Left D-Pad Down** four times in a row while they are highlighted on the Select Player screen. There are warning sounds
 * `marioclash-save.asm`
