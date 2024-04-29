@@ -173,8 +173,9 @@ SAVE_BUTTON_B:
 
 UPDATE_SCORE:
     ?push r6, r7
-    ld.b 0x3E3E[gp], r6     ; check if debug is enabled
-    movea 0x003C, r0, r7
+    ld.b 0x3E3E[gp], r6     ; debug check, how many times was Select pressed?
+    movhi 0x704, r0, r7
+    ld.b -0x32FE[r7], r7    ; how many times enables debug?
     cmp r7, r6
     bge SCORE_RETURN
     ld.h -0x7D32[gp], r6    ; check if we're in the attract mode

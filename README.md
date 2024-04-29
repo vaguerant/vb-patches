@@ -25,11 +25,25 @@ Here's a few assembly patches for Virtual Boy games.
   * prevents high score from being written while running in debug mode
   * saves all options screen settings: brightness, depth, button control scheme and difficulty
   * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
+* `sposh-save.asm`
+  * compatible with `Space Squash (Japan).vb` (and the English translation patch if you like)
+  * disables the forced delay to read the warning screen
+  * title screen: makes **Start** button open the main menu instead of booting directly into game
+  * saves game progress and character upgrades at the end of each Area
+  * adds a Continue option on the main menu to load saved progress
+  * adds support for saving high scores
+  * fixes an original game bug when updating high scores (old scores weren't propagated down the list correctly when beaten)
+  * saves all Config Mode options: level (difficulty), backdrop, BGM toggle, match points, continues and brightness
+  * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
 * `vert-u-save.asm` and `vert-j-save.asm`
   * compatible with `Vertical Force (USA).vb` and `Vertical Force (Japan).vb`, respectively
   * adds support for saving high scores and completion times in all three difficulties
   * prevents high scores/best times from being written if you came via level select
   * saves the brightness, difficulty and control settings
+  * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
+* `vtetris-save.asm`
+  * compatible with `V-Tetris (Japan).vb`
+  * adds support for saving high scores
   * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
 * `water-save.asm`
   * compatible with `Waterworld (USA).vb`
@@ -49,6 +63,7 @@ MV810Asm golf-save.asm golf-save.vb /V /H "Golf (USA).vb"
 MV810Asm jackbros-save.asm jackbros-save.vb /V /H "Jack Bros. (USA).vb"
 MV810Asm marioclash-save.asm marioclash-save.vb /V /H "Mario Clash (Japan, USA).vb"
 MV810Asm redalarm-save.asm redalarm-save.vb /V /H "Red Alarm (USA).vb"
+MV810Asm sposh-save.asm sposh-save.vb /V /H "Space Squash (Japan).vb"
 MV810Asm vert-u-save.asm vert-u-save.vb /V /H "Vertical Force (USA).vb"
 MV810Asm vert-j-save.asm vert-j-save.vb /V /H "Vertical Force (Japan).vb"
 MV810Asm water-save.asm water-save.vb /V /H "Waterworld (USA).vb"
