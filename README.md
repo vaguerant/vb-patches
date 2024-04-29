@@ -66,6 +66,7 @@ MV810Asm redalarm-save.asm redalarm-save.vb /V /H "Red Alarm (USA).vb"
 MV810Asm sposh-save.asm sposh-save.vb /V /H "Space Squash (Japan).vb"
 MV810Asm vert-u-save.asm vert-u-save.vb /V /H "Vertical Force (USA).vb"
 MV810Asm vert-j-save.asm vert-j-save.vb /V /H "Vertical Force (Japan).vb"
+MV810Asm vtetris-save.asm vtetris-save.vb /V /H "V-Tetris (Japan).vb"
 MV810Asm water-save.asm water-save.vb /V /H "Waterworld (USA).vb"
 ```
 You will need to supply clean original ROMs. Filenames are examples only.

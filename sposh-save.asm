@@ -492,17 +492,13 @@ SAVE_SCORE:
 
 SAVE_SCORE_AREA:
     st.h r12, 0x00D0[r1]    ; restored from original
-    shl 1, r11
     movhi 0x600, r11, r1
-    shr 1, r11
     st.b r12, SRAM_SCORE_AREA[r1]
     jr SAVE_SCORE_AREA_RETURN
 
 SAVE_SCORE_LEVEL:
     st.h r12, 0x00E4[r1]    ; restored from original
-    shl 1, r11
     movhi 0x600, r11, r1
-    shr 1, r11
     st.b r12, SRAM_SCORE_LEVEL[r1]
     jr SAVE_SCORE_LEVEL_RETURN
 
