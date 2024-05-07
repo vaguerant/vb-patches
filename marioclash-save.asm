@@ -34,6 +34,42 @@ LOAD_SCORE_LEVELS_RETURN:
     mov r0, r0
 LOAD_BRIGHTNESS_RETURN:
 
+!IF BUTTON_SWAP
+; Swap the buttons themselves
+!SEEK 0xEE206
+    movhi 0x4, r0, r10
+!SEEK 0xEE28C
+    movhi 0x8, r0, r13
+!SEEK 0xEE62E
+    movhi 0x4, r0, r10
+!SEEK 0xEE6BE
+    movhi 0x4, r0, r10
+!SEEK 0xEEB9E
+    andi 0x30, r20, r10
+!SEEK 0xEEF42
+    movhi 0x4, r0, r10
+!SEEK 0xEEFD6
+    andi 0x4, r20, r10
+
+; Fix gameplay demos for swapped buttons
+!ORG 0xFFFDEA72
+!SEEK 0xDEA72
+    jr FIX_ATTRACT_1              ; st.w r10, 0x0044[sp]
+    FIX_ATTRACT_1_RETURN:
+!ORG 0xFFFDEADA
+!SEEK 0xDEADA
+    jr FIX_ATTRACT_2
+    FIX_ATTRACT_2_RETURN:
+!ORG 0xFFFDEB42
+!SEEK 0xDEB42
+    jr FIX_ATTRACT_3
+    FIX_ATTRACT_3_RETURN:
+!ORG 0xFFFDEBAA
+!SEEK 0xDEBAA
+    jr FIX_ATTRACT_4
+    FIX_ATTRACT_4_RETURN:
+!ENDIF
+
 ; Save max level to SRAM when reaching new level
 !ORG 0xFFFDF6B0
 !SEEK 0xDF6B0
@@ -158,6 +194,43 @@ LOAD_BRIGHTNESS:
     ld.b 0x5A62[r10], r10
     st.b r10, 0x1A63[gp]
     ?br LOAD_BRIGHTNESS_RETURN
+
+!IF BUTTON_SWAP
+FIX_ATTRACT_1:
+    ?push lp
+    jal ATTRACT_SWAP
+    ?pop lp
+    jr FIX_ATTRACT_1_RETURN
+FIX_ATTRACT_2:
+    ?push lp
+    jal ATTRACT_SWAP
+    ?pop lp
+    jr FIX_ATTRACT_2_RETURN
+FIX_ATTRACT_3:
+    ?push lp
+    jal ATTRACT_SWAP
+    ?pop lp
+    jr FIX_ATTRACT_3_RETURN
+FIX_ATTRACT_4:
+    ?push lp
+    jal ATTRACT_SWAP
+    ?pop lp
+    jr FIX_ATTRACT_4_RETURN
+
+ATTRACT_SWAP:
+    ?push r9
+    movhi 0x10, r9, r9
+    movea 0x10, r9, r9
+    and r10, r9
+    movea 0xFFFF, r0, r1
+    xor r9, r1
+    and r1, r10
+    shr 2, r9
+    or r9, r10
+    st.w r10, 0x004C[sp]
+    ?pop r9
+    jmp [lp]
+!ENDIF
 
 SAVE_LEVEL:
     movhi 0x601, r0, r1

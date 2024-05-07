@@ -18,6 +18,7 @@ Here's a few assembly patches for Virtual Boy games.
   * compatible with `Mario Clash (Japan, USA).vb`
   * adds support for saving your level progress, high scores and brightness
   * replaces the original capped 1 to 40 level select with the option to select any level that you've previously reached, all the way up to 99
+  * optionally remap the controls to be closer to other Mario games (based on [Controller Fix by DogP](https://www.virtual-boy.com/games/mario-clash/downloads/))
   * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
 * `redalarm-save.asm`
   * compatible with either `Red Alarm (USA).vb` or `Red Alarm (Japan).vb`
@@ -62,6 +63,7 @@ You can build your patched ROMs like so:
 MV810Asm golf-save.asm golf-save.vb /V /H "Golf (USA).vb"
 MV810Asm jackbros-save.asm jackbros-save.vb /V /H "Jack Bros. (USA).vb"
 MV810Asm marioclash-save.asm marioclash-save.vb /V /H "Mario Clash (Japan, USA).vb"
+MV810Asm marioclash-save.asm marioclash-save-bswap.vb /V /I BUTTON_SWAP 1 /H "Mario Clash (Japan, USA).vb"
 MV810Asm redalarm-save.asm redalarm-save.vb /V /H "Red Alarm (USA).vb"
 MV810Asm sposh-save.asm sposh-save.vb /V /H "Space Squash (Japan).vb"
 MV810Asm vert-u-save.asm vert-u-save.vb /V /H "Vertical Force (USA).vb"
