@@ -88,71 +88,46 @@ CHECKWORD:
     ?STRING "RASV"
 
 CHECK_SRAM:
-    movhi 0x70F, r0, r6
-    movea 0x1610, r6, r6    ; address of RASV in ROM
-    movhi 0x600, r0, r30
-NEXT_CHECKBYTE:
-    andi 8, r6, r0
-    bne CLEAR_MEM
-    ld.b 0x0000[r30], r1    ; address of RASV in SRAM
-    ld.b 0x0000[r6], r7
-    add 1, r6
-    add 2, r30
-    cmp r1, r7              ; is RASV byte in the SRAM?
-    be NEXT_CHECKBYTE       ; yes
-CLEAR_SRAM:                 ; no
+    movhi 0x500, r0, r30    ; init RAM, restored from original
     movea 0x4000, r0, r1
-        NEXT_SRAM:
-        st.w r0, 0x0000[r30]
+    .NEXT_MEM:
+        st.w r0, 0000[r30]
         add 4, r30
         add -1, r1
-        bne NEXT_SRAM
-INIT_SRAM:
-    ?mov CHECKWORD, r6
-    ld.w 0x0000[r6], r6
-    movhi 0x600, r0, r30
-        WRITE_CHECKWORD:
-            st.b r6, 0x0000[r30]
-            add 2, r30
-            shr 8, r6
-            andi 0x8, r30, r0
-                be WRITE_CHECKWORD
-INIT_SETTINGS:
-    add -8, r30             ; set save back to 0 after checkword
-    mov -12, r1
-    st.b r1, 0x02C4[r30]    ; init left eye
-    mov -6, r1
-    st.b r1, 0x02C6[r30]    ; init right eye
-    mov 6, r1
-    st.b r1, 0x02CC[r30]    ; init brightness
-    mov 1, r1
-    st.b r1, 0x02E4[r30]    ; init difficulty
-CLEAR_MEM:
-    movhi 0x500, r0, r30    ; now initialize RAM
-    movea 0x4000, r0, r1
-NEXT_MEM:
-    st.w r0, 0000[r30]
-    add 4, r30
-    add -1, r1
-    bne NEXT_MEM
-LOAD_MEM:
-    ?push r1
-    movhi 0x601, r0, r1
-    movea 0x8000, r1, r1
-    ld.b -0x7D3C[r1], r7    ; load in left eye
-    ld.b -0x7D3A[r1], r8    ; load in right eye
-    ld.b -0x7D34[r1], r9    ; load in brightness
-    ld.b -0x7D1C[r1], r10   ; load in difficulty
-    ld.b -0x7D2A[r1], r11   ; load in controls
-    ld.b 0x0896[r1], r6     ; load in high score
-    shl 8, r6
-    ld.b 0x0894[r1], r1
-    andi 0xFF, r1, r1
-    or r1, r6
-    st.h r6, 0x0894[gp]
-    ?pop r1
-RETURN_SRAM:
-    jmp [lp]
+        bne .NEXT_MEM
+    ?push lp
+    jal VALIDATE_CHECKWORD
+    cmp 0, r6
+    be .CHECKWORD_OK
+        movhi 0x600, r0, r6
+        mov -12, r1
+        st.b r1, 0x02C4[r6]     ; init left eye
+        mov -6, r1
+        st.b r1, 0x02C6[r6]     ; init right eye
+        mov 6, r1
+        st.b r1, 0x02CC[r6]     ; init brightness
+        mov 1, r1
+        st.b r1, 0x02E4[r6]     ; init difficulty
+    .CHECKWORD_OK:
+        movhi 0x601, r0, r1
+        movea 0x8000, r1, r1
+        ld.b -0x7D3C[r1], r7    ; load in left eye
+        ld.b -0x7D3A[r1], r8    ; load in right eye
+        ld.b -0x7D34[r1], r9    ; load in brightness
+        ld.b -0x7D1C[r1], r10   ; load in difficulty
+        ld.b -0x7D2A[r1], r11   ; load in controls
+        ld.b 0x0896[r1], r6     ; load in high score
+        shl 8, r6
+        ld.b 0x0894[r1], r1
+        andi 0xFF, r1, r1
+        or r1, r6
+        st.h r6, 0x0894[gp]
+        ?pop lp
+        jmp [lp]
+
+; Boilerplate SRAM functions
+!CONST SRAM_CHECKWORD, 0
+!INCLUDE "include/boot.asm"
 
 SAVE_BUTTON_A:
     ?push r6

@@ -210,62 +210,34 @@ CHECKWORD:
     ?STRING "JBSV"
 
 CHECK_SRAM:
-    ?push r1, r8            ; r6 and r7 filled by CLEAR_MEM
-    ?mov CHECKWORD, r1
-    movhi 0x600, r0, r6
-        NEXT_CHECKBYTE:
-            andi 8, r6, r0  ; if CHECKWORD is valid, skip SRAM init
-            bne CLEAR_MEM
-                ld.b 0x0000[r1], r7
-                ld.b 0x0008[r6], r8
-                add 1, r1
-                add 2, r6
-                cmp r7, r8
-                be NEXT_CHECKBYTE
-    jal CLEAR_SRAM
-    CLEAR_MEM:
-        mov r25, r6
+    ?push r1, r8
+    jal VALIDATE_CHECKWORD
+    cmp 0, r6
+    be .CHECKWORD_OK
+        movhi 0x600, r0, r6
+        mov -1, r7
+        st.b r7, 0x0004[r6]     ; language
+    .CHECKWORD_OK:
+        mov r25, r6             ; restored
         movea 0x4000, r0, r7
         ?pop r1, r8
-            ?br CHECK_SRAM_RETURN
+        ?br CHECK_SRAM_RETURN
 
-CLEAR_SRAM:
-    ?push r1, r7
-    ?mov CHECKWORD, r1
-    ld.w 0x0000[r1], r1
-    movhi 0x600, r0, r6
-    movea 0x4000, r0, r7
-        NEXT_SRAM:
-            st.w r0, 0x0000[r6]
-            add 4, r6
-            add -1, r7
-                bne NEXT_SRAM
-    ?mov CHECKWORD, r6
-    ld.w 0x0000[r6], r6
-    movhi 0x600, r0, r7
-    WRITE_CHECKWORD:
-        st.b r6, 0x0008[r7]
-        shr 8, r6
-        add 2, r7
-        andi 0x8, r7, r0
-            be WRITE_CHECKWORD
-    add -8, r7               ; reset save offset
-    mov -1, r6
-    st.b r6, 0x0004[r7]      ; language
-    ?pop r1, r7
-        jmp [lp]
+; Boilerplate SRAM functions
+!CONST SRAM_CHECKWORD, 8
+!INCLUDE "include/boot.asm"
 
 DEBUG_CHECK:
     movhi 0x600, r0, r6
     movhi 0x500, r0, r7
     ld.b 0x0010[r7], r7
     andi 0x80, r7, r0
-        be NO_DEBUG_SWITCH
+    be NO_DEBUG_SWITCH
     ld.b 0x0000[r6], r7
     xori 0xFF, r7, r7
     st.b r7, 0x0000[r6]
-        NO_DEBUG_SWITCH:
-            jr STARTUP
+    NO_DEBUG_SWITCH:
+        jr STARTUP
 
 DIFFICULTY_TOGGLE:      ; r1 and r7 are free
     movhi 0x600, r0, r1
@@ -273,7 +245,7 @@ DIFFICULTY_TOGGLE:      ; r1 and r7 are free
     xor r7, r6
     st.b r6, 0x0020[r1]
     st.h r6, 0x00F4[r25]
-        ?br DIFFICULTY_TOGGLE_RETURN
+    ?br DIFFICULTY_TOGGLE_RETURN
 
 SUPER_OR_NOT:
     ?push lp
@@ -287,7 +259,7 @@ SUPER_OR_NOT:
         st.w r0, 0x0000[r6]
         add 4, r6
         add -1, r7
-            bne .BLANK_SUPER
+        bne .BLANK_SUPER
             br .SKIP_PRINT
     .HARD_MODE:
         movhi 0x700, r0, r1
@@ -302,7 +274,7 @@ LOAD_DIFFICULTY:        ; r6 and r7 are free
     movhi 0x600, r0, r7
     ld.b 0x0020[r7], r6
     st.h r6, 0x00F4[r25]
-        ?br LOAD_DIFFICULTY_RETURN
+    ?br LOAD_DIFFICULTY_RETURN
 
 LANGUAGE_SWAP:
     ?push r7
@@ -311,7 +283,7 @@ LANGUAGE_SWAP:
     xor r7, r6
     st.b r6, 0x0004[r1]
     ?pop r7
-        ?br LANGUAGE_SWAP_RETURN
+    ?br LANGUAGE_SWAP_RETURN
 
 LOAD_CHARACTER:
     ?push r7, r8
@@ -372,7 +344,7 @@ SAVE_PROGRESS:
     add -1, r8
     ?pop r6, r7
     st.h r6, 0x0168[r25]
-        ?br SAVE_PROGRESS_RETURN
+    ?br SAVE_PROGRESS_RETURN
 
 PASSWORD_PROGRESS:
     ?push r7, r8
@@ -388,7 +360,7 @@ PASSWORD_PROGRESS:
     st.b r9, 0x0010[r7]
     st.b r9, 0x0100[r25]
     ?pop r7, r8
-        ?br PASSWORD_PROGRESS_RETURN
+    ?br PASSWORD_PROGRESS_RETURN
 
 !CONST BGMAP, 0x03
 !CONST BGMAP_FLOOR, 0x8D88

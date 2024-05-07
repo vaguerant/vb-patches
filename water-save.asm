@@ -35,13 +35,7 @@ CHECK_SRAM_RETURN:
 !ORG 0x07000974
 SKIP_AUTOPAUSE:
 
-!IF 0
 ; Don't make that infuriating noise
-!SEEK 0x01002
-    mov r0, r0
-!ENDIF
-
-; Don't make that infuriating noise 2.0
 !SEEK 0x00FF0
     mov r0, r11
 !SEEK 0x03DAC
@@ -289,33 +283,15 @@ CHECKWORD:
     ?STRING "WWSV"
 
 CHECK_SRAM:
-    ?push r8, r9                    ; r6 and r7 will be populated after anyway
-    movhi 0x600, r0, r6
-    ?mov CHECKWORD, r7
-        NEXT_CHECKBYTE:
-            andi 0x8, r6, r0
-                bne CONTINUE_BOOT
-            ld.b 0x0000[r6], r8
-            ld.b 0x0000[r7], r9
-            add 2, r6
-            add 1, r7
-            cmp r8, r9
-                be NEXT_CHECKBYTE
-    movhi 0x600, r0, r6             ; reset SRAM offset
-    ?mov CHECKWORD, r7
-    ld.w 0x0000[r7], r7
-    WRITE_CHECKWORD:
-        st.b r7, 0x0000[r6]
-        shr 8, r7
-        add 2, r6
-        andi 0x8, r6, r0
-            be WRITE_CHECKWORD
-    st.w r0, 0x0000[r6]
-    st.w r0, 0x0004[r6]
-    CONTINUE_BOOT:
-        ?pop r8, r9
-        movea 0x4268, r0, r7
-            jr CHECK_SRAM_RETURN
+    ?push r6, lp
+    jal VALIDATE_CHECKWORD
+    ?pop r6, lp
+    movea 0x4268, r0, r7
+    jr CHECK_SRAM_RETURN
+
+; Boilerplate SRAM functions
+!CONST SRAM_CHECKWORD, 0
+!INCLUDE "include/boot.asm"
 
 PRINT_SCORE:
     ?push r7, r10, r12, r13, r30, lp

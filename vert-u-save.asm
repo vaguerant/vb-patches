@@ -153,62 +153,40 @@ CHECKWORD:
     ?STRING "VFSV"
 
 CHECK_SRAM:
-    movhi 0x600, r0, r6
-    ?mov CHECKWORD, r7
-        NEXT_CHECKBYTE:
-            andi 0x8, r6, r0
-                bne LOAD_BRIGHT_SCORES
-            ld.b 0x0000[r6], r8
-            ld.b 0x0000[r7], r9
-            add 2, r6
-            add 1, r7
-            cmp r8, r9
-                be NEXT_CHECKBYTE
-    CLEAR_SRAM:
+    movhi 0x501, r0, sp
+    ?push lp
+    jal VALIDATE_CHECKWORD
+    cmp 0, r6
+    be .CHECKWORD_OK
         movhi 0x600, r0, r6
-        movea 0x4000, r0, r7
-            NEXT_SRAM:
-                st.w r0, 0x0000[r6]         ; this counts as initing high scores
-                add 4, r6
-                add -1, r7
-                    bne NEXT_SRAM
-            movhi 0x600, r0, r6
-            ?mov CHECKWORD, r7
-            ld.w 0x0000[r7], r7
-                WRITE_CHECKWORD:
-                    st.b r7, 0x0000[r6]
-                    shr 8, r7
-                    add 2, r6
-                    andi 0x8, r6, r0
-                        be WRITE_CHECKWORD
-            movhi 0x704, r0, r7         ; initializing brightness
-            movea DEF_BRIGHT, r7, r7
-            ld.w 0x0000[r7], r7
-            st.b r7, 0x0000[r6]         ; don't forget r6 is +8
-            shr 8, r7
-            st.b r7, 0x0002[r6]
-            shr 8, r7
-            st.b r7, 0x0004[r6]
-            shr 8, r7
-            st.b r7, 0x0006[r6]
-            movhi 0x113, r0, r7         ; initializing best times
-            movea 0xA87F, r7, r7        ; once for each difficulty
-            st.b r7, 0x0020[r6]
-            st.b r7, 0x0028[r6]
-            st.b r7, 0x0030[r6]
-            shr 8, r7
-            st.b r7, 0x0022[r6]
-            st.b r7, 0x002A[r6]
-            st.b r7, 0x0032[r6]
-            shr 8, r7
-            st.b r7, 0x0024[r6]
-            st.b r7, 0x002C[r6]
-            st.b r7, 0x0034[r6]
-            shr 8, r7
-            st.b r7, 0x0026[r6]
-            st.b r7, 0x002E[r6]
-            st.b r7, 0x0036[r6]
-    LOAD_BRIGHT_SCORES:
+        movhi 0x704, r0, r7         ; initializing brightness
+        movea DEF_BRIGHT, r7, r7
+        ld.w 0x0000[r7], r7
+        st.b r7, 0x0008[r6]
+        shr 8, r7
+        st.b r7, 0x000A[r6]
+        shr 8, r7
+        st.b r7, 0x000C[r6]
+        shr 8, r7
+        st.b r7, 0x000E[r6]
+        movhi 0x113, r0, r7         ; initializing best times
+        movea 0xA87F, r7, r7        ; once for each difficulty
+        st.b r7, 0x0028[r6]
+        st.b r7, 0x0030[r6]
+        st.b r7, 0x0038[r6]
+        shr 8, r7
+        st.b r7, 0x002A[r6]
+        st.b r7, 0x0032[r6]
+        st.b r7, 0x003A[r6]
+        shr 8, r7
+        st.b r7, 0x002C[r6]
+        st.b r7, 0x0034[r6]
+        st.b r7, 0x003C[r6]
+        shr 8, r7
+        st.b r7, 0x002E[r6]
+        st.b r7, 0x0036[r6]
+        st.b r7, 0x003E[r6]
+    .CHECKWORD_OK:
         movhi 0x600, r0, r6         ; brightness
         ld.b 0x0008[r6], r7
         st.b r7, -0x8000[gp]
@@ -218,16 +196,20 @@ CHECK_SRAM:
         st.b r7, -0x7FFE[gp]
         ld.b 0x000E[r6], r7
         st.b r7, -0x7FFD[gp]
-        movhi 0x600, r0, r6         ; high scores
         movea 0x0018, r0, r8
-            NEXT_SCORE_BYTE:
-                ld.b 0x0010[r6], r7
-                st.b r7, -0x7FFC[gp]
-                add 1, gp
-                add 2, r6
-                add -1, r8
-                    bne NEXT_SCORE_BYTE
-                    jmp [lp]
+        .NEXT_SCORE_BYTE:
+            ld.b 0x0010[r6], r7
+            st.b r7, -0x7FFC[gp]
+            add 1, gp
+            add 2, r6
+            add -1, r8
+            bne .NEXT_SCORE_BYTE
+                ?pop lp
+                jmp [lp]
+
+; Boilerplate SRAM functions
+!CONST SRAM_CHECKWORD, 0
+!INCLUDE "include/boot.asm"
 
 LOAD_SETTINGS:
     movhi 0x600, r0, r6

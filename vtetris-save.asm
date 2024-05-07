@@ -23,8 +23,6 @@
 !ORG 0xFFF89050
 !SEEK 0x09050
     jal CHECK_SRAM      ; movea 0x4000, r0, r7
-    !ORG 0xFFF89146
-    CLEAR_MEM:
 
 !ORG 0xFFF8908C
     RESET_SCORES:
@@ -120,6 +118,9 @@
     jr ERASE_CHECK      ; ld.h 0x001C[sp], r10
     ERASE_CHECK_RETURN:
 
+!ORG 0xFFFCF2D4
+    ROM_SCORES:
+
 !ORG 0xFFF81624
 !SEEK 0x01624
 CHECKWORD:
@@ -127,51 +128,27 @@ CHECKWORD:
 
 CHECK_SRAM:
     ?push r8, lp            ; r1, r6 and r7 are free
-    ?mov CHECKWORD, r1
-    movhi 0x600, r0, r6
-        NEXT_CHECKBYTE:
-            andi 8, r6, r0          ; if CHECKWORD is valid, skip SRAM init
-            bne CHECKWORD_OK
-                ld.b 0x0000[r1], r7
-                ld.b 0x0000[r6], r8
-                add 1, r1
-                add 2, r6
-                cmp r7, r8
-                be NEXT_CHECKBYTE
-    jal CLEAR_SRAM
-    CHECKWORD_OK:
-        movea 0x4000, r0, r7    ; restored from original
-        ?pop r8, lp
-        jmp [lp]
-
-CLEAR_SRAM:
-    ?push lp
-    movhi 0x600, r0, r6
-    movea 0x4000, r0, r7
-    mov r0, r8
-    jal CLEAR_MEM
-    ?mov CHECKWORD, r1
-    ld.w 0x0000[r1], r1
-    movhi 0x600, r0, r6
-        WRITE_CHECKWORD:
-            st.b r1, 0x0000[r6]
-            shr 8, r1
-            add 2, r6
-            andi 0x8, r6, r0
-                be WRITE_CHECKWORD
-    add -8, r6
-    movhi 0xFFFD, r0, r1
-    movea 0xF2D4, r1, r1
-    movea 0x0168, r0, r8
-        NEXT_SCORE_BYTE:
+    jal VALIDATE_CHECKWORD
+    cmp 0, r6
+    be .CHECKWORD_OK
+        movhi 0x600, r0, r6
+        ?mov ROM_SCORES, r1
+        movea 0x0168, r0, r8
+        .NEXT_SCORE_BYTE:
             ld.b 0x0000[r1], r7
             st.b r7, 0x0010[r6]
             add 1, r1
             add 2, r6
             add -1, r8
-                bne NEXT_SCORE_BYTE
-    ?pop lp
-    jmp [lp]
+            bne .NEXT_SCORE_BYTE
+    .CHECKWORD_OK:
+        movea 0x4000, r0, r7    ; restored from original
+        ?pop r8, lp
+        jmp [lp]
+
+; Boilerplate SRAM functions
+!CONST SRAM_CHECKWORD, 0
+!INCLUDE "include/boot.asm"
 
 LOAD_SCORES:       ; r12 is free
     movhi 0x600, r11, r1
@@ -263,10 +240,12 @@ ERASE_CHECK:
     ld.h 0x0028[sp], r10
     movea 0x8430, r0, r7
     cmp r7, r10
-    bne NO_ERASE
-        jal CLEAR_SRAM
+    bne .NO_ERASE
+        movhi 0x600, r0, r7
+        st.w r0, 0x0000[r7]
+        jal CHECK_SRAM
         jal RESET_SCORES
-    NO_ERASE:
+    .NO_ERASE:
     ?pop r7
     ld.h 0x001C[sp], r10
     jr ERASE_CHECK_RETURN

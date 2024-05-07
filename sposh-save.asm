@@ -314,43 +314,10 @@ CHECKWORD:
 
 CHECK_SRAM:
     ?push lp
-    ?mov CHECKWORD, r9
-    movhi 0x600, r0, r6
-        NEXT_CHECKBYTE:
-            andi 8, r6, r0          ; if CHECKWORD is valid, skip SRAM init
-            bne CHECKWORD_OK
-                ld.b 0x0000[r9], r7
-                ld.b 0x0000[r6], r8
-                add 1, r9
-                add 2, r6
-                cmp r7, r8
-                be NEXT_CHECKBYTE
-    jal CLEAR_SRAM
-    CHECKWORD_OK:
-        jal STARTUP             ; restored from original
-        ?pop lp
-        jmp [lp]
-
-CLEAR_SRAM:
-    ?mov CHECKWORD, r9
-    ld.w 0x0000[r9], r9
-    movhi 0x600, r0, r6
-    movea 0x4000, r0, r7
-        NEXT_SRAM:
-            st.w r0, 0x0000[r6]
-            add 4, r6
-            add -1, r7
-                bne NEXT_SRAM
-    ?mov CHECKWORD, r9
-    ld.w 0x0000[r9], r9
-    movhi 0x600, r0, r6
-    WRITE_CHECKWORD:
-        st.b r9, 0x0000[r6]
-        shr 8, r9
-        add 2, r6
-        andi 0x8, r6, r0
-            be WRITE_CHECKWORD
-    add -8, r6              ; reset save offset
+    jal VALIDATE_CHECKWORD
+    cmp 0, r6
+    be .CHECKWORD_OK
+    movhi 0x600, r0, r6     ; if checkword failed, initialize save
     ?mov ROM_SCORES, r9
     movea 0x0028, r0, r8
         .NEXT_SCORE_BYTE:
@@ -389,7 +356,15 @@ CLEAR_SRAM:
     st.h r10, BRIGHTNESS[r6]
     mov 3, r10
     st.h r10, MATCH[r6]
-    jmp [lp]
+    .CHECKWORD_OK:
+        jal STARTUP             ; restored from original
+        ?pop lp
+        jmp [lp]
+
+; Boilerplate SRAM functions
+!CONST SRAM_DELAY, 1
+!CONST SRAM_CHECKWORD, 0
+!INCLUDE "include/boot.asm"
 
 LOAD_SCORES:
     ?push r6

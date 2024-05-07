@@ -86,6 +86,9 @@ SAVE_SCORES_A_RETURN:
     ?db 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 SAVE_SCORES_B_RETURN:
 
+!ORG 0xFFFFD788
+    SOFT_RESET:
+
 !ORG 0xFFFFD7AA
 !SEEK 0xFD7AA
     jr CHECK_SRAM               ; movhi 0x500, r0, r10
@@ -97,62 +100,34 @@ CHECKWORD:
     ?STRING "MCSV"
 
 CHECK_SRAM:
-    ?push r6                    ; r10, r11, r12 will be cleared by CLEAR_MEM
-    ?mov CHECKWORD, r6
+    ?push r6, lp                ; r10, r11, r12 will be cleared after return
+    jal VALIDATE_CHECKWORD
+    cmp 0, r6
+    be .CHECKWORD_OK
     movhi 0x600, r0, r10
-        NEXT_CHECKBYTE:
-            andi 4, r10, r0
-                bne CLEAR_MEM
-            ld.b 0x0000[r6], r11
-            ld.b 0x0000[r10], r12
-            add 1, r6
-            add 2, r10
-            cmp r11, r12
-                be NEXT_CHECKBYTE
-    jal CLEAR_SRAM
-    br CLEAR_MEM
-CLEAR_MEM:
-    ?pop r6
-    movhi 0x500, r0, r10
-    ?br CHECK_SRAM_RETURN
-
-CLEAR_SRAM:
-    ?push r6, r10, r11, r12
-    movhi 0x600, r0, r10
-    movea 0x4000, r0, r11
-        NEXT_SRAM:
-            st.w r0, 0x0000[r10]
-            add 4, r10
-            add -1, r11
-                bne NEXT_SRAM
-    ?mov CHECKWORD, r6
-    ld.w 0x0000[r6], r6
-    movhi 0x600, r0, r10
-    WRITE_CHECKWORD:
-        st.b r6, 0x0000[r10]
-        shr 8, r6
-        add 2, r10
-        andi 0x8, r10, r0
-            be WRITE_CHECKWORD
-    add -8, r10                 ; set save back to 0 offset
     mov 2, r11
     st.b r11, 0x5A62[r10]       ; brightness, off by one from RAM
     movhi 0x601, r0, r10
     mov 1, r11
     st.b r11, -0x658C[r10]      ; level
-        INIT_HIGH_SCORES:
-            movhi 0xFFF2, r0, r6        ; high scores in ROM
-            movhi 0x0601, r0, r10       ; high scores in SRAM
-            movea 0x19, r0, r12
-                NEXT_SCORE:
-                    ld.b -0x15B4[r6], r11
-                    st.b r11, -0x6568[r10]
-                    add 1, r6
-                    add 2, r10
-                    add -1, r12
-                        bne NEXT_SCORE
-    ?pop r6, r10, r11, r12
-    jmp [lp]
+    movhi 0xFFF2, r0, r6        ; high scores in ROM
+    movhi 0x0601, r0, r10       ; high scores in SRAM
+    movea 0x19, r0, r12
+    .NEXT_SCORE:
+        ld.b -0x15B4[r6], r11
+        st.b r11, -0x6568[r10]
+        add 1, r6
+        add 2, r10
+        add -1, r12
+        bne .NEXT_SCORE
+    .CHECKWORD_OK:
+        ?pop r6, lp
+        movhi 0x500, r0, r10
+        ?br CHECK_SRAM_RETURN
+
+; Boilerplate SRAM functions
+!CONST SRAM_CHECKWORD, 0
+!INCLUDE "include/boot.asm"
 
 LOAD_HIGH_SCORES:
     ?push r6
@@ -196,8 +171,10 @@ ERASE_SAVE:
     andi 0xFFFF, r6, r6
     cmp r6, r10
     bne DONT_ERASE
+    movhi 0x600, r0, r10
+    st.w r0, 0x0000[r10]
     movea 0x303C, r0, r10
-    jal CLEAR_SRAM
+    jal SOFT_RESET
     DONT_ERASE:
     ?pop r6
     st.w r10, 0x0014[sp]
