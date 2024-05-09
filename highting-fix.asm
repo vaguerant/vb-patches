@@ -1,0 +1,28 @@
+!CONST SKIP_INTRO, 0
+!CONST BOOT_TO_MENU, 0
+
+!IF SKIP_INTRO
+; Skip manual warning
+!ORG 0x0741F298
+!SEEK 0x1F298
+    jr IPD_ADJUSTMENT
+    !ORG 0x0741F4BC
+    IPD_ADJUSTMENT:
+; Skip IPD
+!ORG 0x0741F52E
+!SEEK 0x1F52E
+    ?br CUTSCENE
+    !ORG 0x0741F760
+    CUTSCENE:
+!ENDIF
+
+!IF BOOT_TO_MENU
+; Boot directly to main menu
+!ORG 0x0702093A
+!SEEK 0x2093A
+    ?dh 0x0000, 0x0000
+!ENDIF
+
+; Fix brightness cap
+!SEEK 0x1CD30
+    movea 0x20, r0, r13

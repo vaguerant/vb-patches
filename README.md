@@ -5,6 +5,9 @@ Here's a few assembly patches for Virtual Boy games.
   * compatible with `Golf (USA).vb`
   * restores full save support from the Japanese game, replacing password system
   * erase saves with the normal in-game menu under Individual Records
+* `highting-fix.asm`
+  * compatible with `Hyper Fighting (World) (Aftermarket) (Unl).vb`
+  * fixes a minor bug where the Brightness setting fails to save if you set it to maximum
 * `jackbros-save.asm`
   * compatible with `Jack Bros. (USA).vb` **only**
   * does not apply to the Japan ROM but you can use the secret language-swap button code built into the original game (!). Hold **L**, **R** and **Left D-Pad Left** then press **Start** on the title screen; this will switch languages and save the new setting to SRAM
@@ -19,6 +22,10 @@ Here's a few assembly patches for Virtual Boy games.
   * adds support for saving your level progress, high scores and brightness
   * replaces the original capped 1 to 40 level select with the option to select any level that you've previously reached, all the way up to 99
   * optionally remap the controls to be closer to other Mario games (based on [Controller Fix by DogP](https://www.virtual-boy.com/games/mario-clash/downloads/))
+  * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
+* `nester-save.asm`
+  * compatible with `Nester's Funky Bowling (USA).vb`
+  * adds support for saving your name, character, ball weight and the League Leaders (high scores)
   * erase save by pressing **L** + **R** + **Left D-Pad Down** + **Right D-Pad Down** on the title screen
 * `redalarm-save.asm`
   * compatible with either `Red Alarm (USA).vb` or `Red Alarm (Japan).vb`
@@ -61,9 +68,11 @@ These patches are written for [Matej's V810 assembler](http://matejhorvat.si/en/
 You can build your patched ROMs like so:
 ```
 MV810Asm golf-save.asm golf-save.vb /V /H "Golf (USA).vb"
+MV810Asm highting-fix.asm highting-fix.vb /V /H "Hyper Fighting (World) (Aftermarket) (Unl).vb"
 MV810Asm jackbros-save.asm jackbros-save.vb /V /H "Jack Bros. (USA).vb"
 MV810Asm marioclash-save.asm marioclash-save.vb /V /H "Mario Clash (Japan, USA).vb"
 MV810Asm marioclash-save.asm marioclash-save-bswap.vb /V /I BUTTON_SWAP 1 /H "Mario Clash (Japan, USA).vb"
+MV810Asm nester-save.asm nester-save.vb /V /H "Nester's Funky Bowling (USA).vb"
 MV810Asm redalarm-save.asm redalarm-save.vb /V /H "Red Alarm (USA).vb"
 MV810Asm sposh-save.asm sposh-save.vb /V /H "Space Squash (Japan).vb"
 MV810Asm vert-u-save.asm vert-u-save.vb /V /H "Vertical Force (USA).vb"
